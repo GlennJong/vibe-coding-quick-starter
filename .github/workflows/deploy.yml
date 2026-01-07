@@ -29,7 +29,6 @@ jobs:
       - name: Build
         run: |
           yarn build
-          yarn build:demo
         env:
           VITE_GOOGLE_CLIENT_ID: ${{ secrets.VITE_GOOGLE_CLIENT_ID }}
           VITE_MASTER_SCRIPT_URL: ${{ secrets.VITE_MASTER_SCRIPT_URL }}
