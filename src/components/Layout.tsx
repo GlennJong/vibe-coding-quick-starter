@@ -12,7 +12,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, isLoggedIn }) => {
     <Flex align="center" justify="center" style={{ minHeight: '100vh', width: '100%' }}>
       <Container size="2" p="4">
         <Flex direction="column" gap="4" align="center" mb="6">
-          <img src="/vibe-sheets-logo_full.png" alt="" style={{ width: '200px', height: 'auto', display: 'block' }} />
+          <img src="vibe-sheets-logo_full.png" alt="" style={{ width: '200px', height: 'auto', display: 'block' }} />
           <Text size="3" color="gray" align="center">
             無伺服器資料庫解決方案：Google Sheets + Apps Script
           </Text>
