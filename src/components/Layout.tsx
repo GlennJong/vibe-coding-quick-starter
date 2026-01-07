@@ -1,5 +1,6 @@
 import React from 'react';
-import { styles } from '../styles/theme';
+import { Container, Flex, Heading, Text, Separator, Box, Badge } from '@radix-ui/themes';
+import { CheckCircledIcon } from '@radix-ui/react-icons';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -8,16 +9,36 @@ interface LayoutProps {
 
 export const Layout: React.FC<LayoutProps> = ({ children, isLoggedIn }) => {
   return (
-    <div style={styles.container}>
-      <header style={styles.header}>
-        <h1>Google Sheets 快速部署器</h1>
-        <p>此工具將自動為您建立包含自訂 Apps Script 邏輯的試算表</p>
-        {isLoggedIn && <p style={{fontSize: '0.8rem', color: 'green'}}>✓ 已登入 Google 帳號</p>}
-      </header>
+    <Container size="2" p="4">
+      <Flex direction="column" gap="4" align="center" mb="6">
+        <Heading size="8" align="center" style={{ background: 'linear-gradient(to right, #3b82f6, #8b5cf6)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'}}>
+          Vibe Sheets
+        </Heading>
+        <Text size="3" color="gray" align="center">
+          無伺服器資料庫解決方案：Google Sheets + Apps Script
+        </Text>
+        
+        <Box maxWidth="400px" style={{ textAlign: 'center' }}>
+            <Text as="p" size="1" color="gray">
+            快速產生具備 JSON API 的試算表，讓前端能夠直接讀取資料。
+            </Text>
+        </Box>
 
-      <main style={styles.main}>
+        {isLoggedIn && (
+          <Badge color="green" variant="soft" size="2">
+            <Flex align="center" gap="2">
+              <CheckCircledIcon />
+              已登入 Google 帳號
+            </Flex>
+          </Badge>
+        )}
+      </Flex>
+      
+      <Separator size="4" mb="6" />
+
+      <Flex direction="column" width="100%" gap="4">
         {children}
-      </main>
-    </div>
+      </Flex>
+    </Container>
   );
 };

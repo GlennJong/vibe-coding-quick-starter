@@ -1,5 +1,5 @@
 import React from 'react';
-import { styles } from '../styles/theme';
+import { Card, Flex, Button, Text } from '@radix-ui/themes';
 
 interface LoginViewProps {
   onLogin: () => void;
@@ -8,15 +8,21 @@ interface LoginViewProps {
 
 export const LoginView: React.FC<LoginViewProps> = ({ onLogin, loading }) => {
   return (
-    <div style={styles.card}>
-      <button 
-        onClick={onLogin} 
-        disabled={loading}
-        style={{...styles.button, backgroundColor: loading ? '#ccc' : '#4285f4'}}
-      >
-        {loading ? '正在處理中...' : '授權並登入'}
-      </button>
-      {loading && <p style={styles.loadingText}>這可能需要幾秒鐘...</p>}
-    </div>
+    <Card size="3">
+      <Flex direction="column" gap="4" align="center" py="4">
+        <Text size="5" weight="bold">歡迎使用</Text>
+        <Text size="2" color="gray" align="center">
+            請授權以存取您的 Google Drive<br/>以便建立與管理試算表
+        </Text>
+        <Button 
+          onClick={onLogin} 
+          disabled={loading}
+          size="3"
+          style={{ cursor: 'pointer', width: '100%' }}
+        >
+          {loading ? '正在處理中...' : '登入 Google'}
+        </Button>
+      </Flex>
+    </Card>
   );
 };

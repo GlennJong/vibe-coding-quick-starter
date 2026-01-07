@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { styles } from './styles/theme';
+import { Callout } from '@radix-ui/themes';
+import { ExclamationTriangleIcon } from '@radix-ui/react-icons';
+
 import { useGoogleAuth } from './hooks/useGoogleAuth';
 import { useSheetManager } from './hooks/useSheetManager';
 
@@ -88,7 +90,16 @@ const App: React.FC = () => {
         </>
       )}
 
-      {currentError && <div style={styles.errorBox}>❌ {currentError}</div>}
+      {currentError && (
+        <Callout.Root color="red" role="alert" style={{ marginTop: '20px' }}>
+            <Callout.Icon>
+                <ExclamationTriangleIcon />
+            </Callout.Icon>
+            <Callout.Text>
+                {currentError}
+            </Callout.Text>
+        </Callout.Root>
+      )}
     </Layout>
   );
 };
