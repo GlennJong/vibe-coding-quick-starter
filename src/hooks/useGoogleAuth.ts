@@ -1,5 +1,11 @@
 import { useState, useEffect, useCallback } from 'react';
 
+declare global {
+  interface Window {
+    google: any;
+  }
+}
+
 const CLIENT_ID = import.meta.env['VITE_GOOGLE_CLIENT_ID'];
 const SCOPES = [
   'https://www.googleapis.com/auth/spreadsheets',
@@ -15,6 +21,18 @@ export const useGoogleAuth = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>('');
 
+
+  const handleTokenResponse = useCallback((response: any) => {
+    if (response.error) {
+      setError(`授權失敗: ${response.error}`);
+      setLoading(false);
+      return;
+    }
+    setAccessToken(response.access_token);
+    setError('');
+    setLoading(false);
+  }, []);
+
   useEffect(() => {
     const script = document.createElement('script');
     script.src = 'https://accounts.google.com/gsi/client';
@@ -29,18 +47,7 @@ export const useGoogleAuth = () => {
       setTokenClient(client);
     };
     document.body.appendChild(script);
-  }, []);
-
-  const handleTokenResponse = useCallback((response: any) => {
-    if (response.error) {
-      setError(`授權失敗: ${response.error}`);
-      setLoading(false);
-      return;
-    }
-    setAccessToken(response.access_token);
-    setError('');
-    setLoading(false);
-  }, []);
+  }, [handleTokenResponse]);
 
   const login = () => {
     if (!tokenClient) {
