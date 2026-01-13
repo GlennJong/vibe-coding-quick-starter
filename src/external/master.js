@@ -3,7 +3,7 @@
  */
 function doGet(e) {
   const userToken = e.parameter.token;
-  const spreadsheetTitle = e.parameter.name || "快速產生的自動化工具";
+  const spreadsheetTitle = e.parameter.name || "Vibe Sheets";
   
   if (!userToken) {
     return createJsonResponse({ error: "未提供有效的 User Token" });
@@ -106,7 +106,7 @@ function createScriptProject(token, parentId) {
     method: "post",
     headers: { "Authorization": "Bearer " + token },
     contentType: "application/json",
-    payload: JSON.stringify({ title: "MyAutoDoGet", parentId: parentId })
+    payload: JSON.stringify({ title: "My Vibe Sheets Helper", parentId: parentId })
   };
   const res = UrlFetchApp.fetch(url, options);
   return JSON.parse(res.getContentText()).scriptId;

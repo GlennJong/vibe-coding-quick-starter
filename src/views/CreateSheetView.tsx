@@ -36,7 +36,7 @@ export const CreateSheetView: React.FC<CreateSheetViewProps> = ({
             <Callout.Text>
               <Text weight="bold" as="div" mb="2">重要：最後一步</Text>
               <Text size="2">
-                由於這是新產生的自動化工具，Google 安全機制要求您必須手動授權一次。
+                請授權您自己的 Apps Script 來控制您的 Google Sheets。此工具完全運行在您的帳號下，您擁有絕對的主導權。
               </Text>
               <Button 
                 onClick={() => creationResult.scriptUrl && openAuthPopup(creationResult.scriptUrl)}
@@ -83,6 +83,7 @@ export const CreateSheetView: React.FC<CreateSheetViewProps> = ({
             <Text size="2" weight="bold">表格名稱</Text>
             <TextField.Root 
                 placeholder="請輸入名稱" 
+                disabled={loading}
                 value={sheetName} 
                 onChange={(e) => setSheetName(e.target.value)}
             >

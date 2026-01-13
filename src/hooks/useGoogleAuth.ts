@@ -20,7 +20,67 @@ export const useGoogleAuth = () => {
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>('');
+  const [isAppsScriptEnabled, setIsAppsScriptEnabled] = useState<boolean>(true);
+  const [isChecking, setIsChecking] = useState<boolean>(false);
 
+  const checkAppsScriptStatus = useCallback(async (token: string) => {
+    // 避免重複檢查
+    // if (isChecking) return; 
+    // 考慮到可能需要強制重試，這裡暫時不擋，但實務上最好有個 debounce
+
+    setIsChecking(true);
+    try {
+      // 改用 Create 方法來測試，這是最準確的權限檢查
+      // 嘗試建立一個空的暫存專案
+      const createResponse = await fetch('https://script.googleapis.com/v1/projects', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          title: 'Auth Check (Auto Delete)'
+        })
+      });
+
+      if (createResponse.status === 403) {
+        // 403 無法建立 -> 幾乎肯定是因為沒啟用 API
+        console.log('Apps Script API create check failed (403), assuming disabled.');
+        setIsAppsScriptEnabled(false);
+      } else if (createResponse.ok) {
+        // 成功建立 -> 代表 API 絕對是開啟的
+        setIsAppsScriptEnabled(true);
+        
+        // 為了不產生垃圾檔案，立即刪除剛剛建立的測試專案
+        const data = await createResponse.json();
+        const scriptId = data.scriptId;
+        
+        if (scriptId) {
+          try {
+            // 使用 Drive API 刪除檔案
+            await fetch(`https://www.googleapis.com/drive/v3/files/${scriptId}`, {
+              method: 'DELETE',
+              headers: {
+                'Authorization': `Bearer ${token}`
+              }
+            });
+          } catch (deleteErr) {
+            console.warn('Failed to cleanup check file:', deleteErr);
+          }
+        }
+      } else {
+        // 其他錯誤 (500, etc) -> 保守起見，假設是開啟的，不阻擋使用者
+        console.warn('Apps Script check returned unexpected status:', createResponse.status);
+        setIsAppsScriptEnabled(true);
+      }
+    } catch (err) {
+      console.error('檢查 Apps Script 狀態失敗:', err);
+      // 發生網路錯誤等例外狀況，保守起見設為 true，避免錯誤引導
+      setIsAppsScriptEnabled(true);
+    } finally {
+      setIsChecking(false);
+    }
+  }, []);
 
   const handleTokenResponse = useCallback((response: any) => {
     if (response.error) {
@@ -29,9 +89,11 @@ export const useGoogleAuth = () => {
       return;
     }
     setAccessToken(response.access_token);
+    checkAppsScriptStatus(response.access_token);
     setError('');
     setLoading(false);
-  }, []);
+  }, [checkAppsScriptStatus]);
+
 
   useEffect(() => {
     const script = document.createElement('script');
@@ -58,5 +120,11 @@ export const useGoogleAuth = () => {
     tokenClient.requestAccessToken({ prompt: 'consent' });
   };
 
-  return { accessToken, login, loading, error };
+  const recheckAuth = useCallback(() => {
+    if (accessToken) {
+      checkAppsScriptStatus(accessToken);
+    }
+  }, [accessToken, checkAppsScriptStatus]);
+
+  return { accessToken, login, loading, error, isAppsScriptEnabled, isChecking, recheckAuth };
 };
