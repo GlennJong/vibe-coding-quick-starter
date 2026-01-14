@@ -11,6 +11,9 @@ import { MenuView } from './views/MenuView';
 import { CreateSheetView } from './views/CreateSheetView';
 import { SheetListView } from './views/SheetListView';
 import { AuthWarning } from './components/AuthWarning';
+import { RemoveView } from './views/RemoveView';
+
+type View = 'login' | 'menu' | 'create' | 'list' | 'remove';
 
 const App: React.FC = () => {
   const { accessToken, login, loading: authLoading, error: authError, isAppsScriptEnabled, recheckAuth } = useGoogleAuth();
@@ -30,7 +33,7 @@ const App: React.FC = () => {
     clearAuthUrl
   } = useSheetManager(accessToken);
 
-  const [view, setView] = useState<'login' | 'menu' | 'create' | 'list'>('login');
+  const [view, setView] = useState<View>('login');
 
   // 當取得 AccessToken 後自動切換到 Menu，避免卡在 Login 頁
   useEffect(() => {
@@ -56,7 +59,7 @@ const App: React.FC = () => {
   }, [isAppsScriptEnabled]);
 
   // 切換 View 時清除相關狀態
-  const handleSwitchView = (newView: 'login' | 'menu' | 'create' | 'list') => {
+  const handleSwitchView = (newView: View) => {
     setView(newView);
     clearError();
     clearTestData();
@@ -133,6 +136,10 @@ const App: React.FC = () => {
               authUrl={authUrl}
               onCloseTestResult={() => { clearTestData(); clearAuthUrl(); }}
             />
+          )}
+
+          {view === 'remove' && (
+            <RemoveView onBack={() => handleSwitchView('menu')} />
           )}
         </>
       )}

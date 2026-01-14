@@ -16,7 +16,7 @@ function doGet(e) {
     const spreadsheetUrl = ssInfo.spreadsheetUrl;
 
     // 2. 在該試算表下建立 Apps Script 專案
-    const scriptId = createScriptProject(userToken, spreadsheetId);
+    const scriptId = createScriptProject(userToken, spreadsheetId, spreadsheetTitle);
 
     // 3. 寫入 doGet 程式碼並設定 Web App 權限
     updateScriptContent(userToken, scriptId);
@@ -76,7 +76,7 @@ function createUserSpreadsheet(token, title) {
               values: [
                 { userEnteredValue: { stringValue: "demo_01" } },
                 { userEnteredValue: { stringValue: "範例項目" } },
-                { userEnteredValue: { stringValue: "請在第一列定義欄位名稱(Key)，從第二列開始輸入您的資料。" } },
+                { userEnteredValue: { stringValue: "請在第一列↑定義欄位名稱(Key)，從第二列開始輸入您的資料。" } },
                 { userEnteredValue: { stringValue: "active" } }
               ]
             }
@@ -100,13 +100,13 @@ function createUserSpreadsheet(token, title) {
   return { id: data.spreadsheetId, spreadsheetUrl: data.spreadsheetUrl };
 }
 
-function createScriptProject(token, parentId) {
+function createScriptProject(token, parentId, name) {
   const url = "https://script.googleapis.com/v1/projects";
   const options = {
     method: "post",
     headers: { "Authorization": "Bearer " + token },
     contentType: "application/json",
-    payload: JSON.stringify({ title: "My Vibe Sheets Helper", parentId: parentId })
+    payload: JSON.stringify({ title: name, parentId: parentId })
   };
   const res = UrlFetchApp.fetch(url, options);
   return JSON.parse(res.getContentText()).scriptId;
